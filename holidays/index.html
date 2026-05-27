@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Airbnb Shortlist</title>
+    <style>
+        :root {
+            --bg-color: #f7f7f7;
+            --card-bg: #ffffff;
+            --text-color: #222222;
+            --accent-color: #FF5A5F;
+            --border-radius: 12px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { margin: 0 0 10px 0; font-size: 2.5rem; }
+        p { color: #666; margin: 0; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+        .thumbnail-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 66.66%;
+            background-color: #e0e0e0;
+        }
+        .thumbnail-wrapper img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+        }
+        .card-content { padding: 16px; }
+        .tags {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 4px;
+        }
+        .title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .notes { font-size: 0.9rem; color: #555; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>My Holiday Rental Ideas List</h1>
+            <p>Prices vary based on time of year</p>
+        </header>
+
+        <main class="grid" id="listings-grid"></main>
+    </div>
+
+    <script>
+        // --- YOUR FLAT DATA FILE ---
+        // Just add, remove, or edit items in this list. 
+        // Make sure each item has a comma after its closing bracket } except the last one!
+        const airbnbData = [
+            {
+                url: "https://www.airbnb.co.uk/rooms/1152670546658487958",
+                thumbnail: "https://a0.muscache.com/im/pictures/hosting/Hosting-1152670546658487958/original/e492aa04-9aa0-4083-b652-ce507f41eae7.jpeg?im_w=960",
+                location: "Norfolk, United Kingdom",
+                price: "£195",
+                title: "The Tiny House @ Wardley Hill",
+                notes: "This two storey adult only biomimetic designed off grid cabin has everything you need for a quick weekend away or a longer retreat."
+            },
+            {
+                url: "https://www.airbnb.co.uk/rooms/40396036",
+                thumbnail: "https://a0.muscache.com/im/pictures/20b7b9ee-1abe-4ca9-a435-d1a6dd20defb.jpg?im_w=960",
+                location: "Gresham, United Kingdom",
+                price: "£204",
+                title: "Luxury Woodland Hideaway",
+                notes: "Nestled in the trees with stunning views down into a hidden, valley. Binoculars are provided to enjoy the Barn Owls, Kites, deer, foxes, badgers, rabbits, hares and squirrels that inhabit the valley."
+            },
+            {
+                url: "https://www.airbnb.co.uk/rooms/29262786",
+                thumbnail: "https://a0.muscache.com/im/pictures/66f22255-4ff0-45b2-81e5-49d3cb0b3677.jpg?im_w=960",
+                location: "Ballintuim, Scotland",
+                price: "£390",
+                title: "The Bridge House",
+                notes: "If your looking for something a little different then The Bridge House might be just for you! My unusual 2 bedroom home was built on a bridge spanning the River Ardle in 1881."
+            },
+			{
+                url: "https://www.kiphideaways.com/hideaways/chatan/",
+                thumbnail: "https://www.kiphideaways.com/wp-content/uploads/2024/03/Chatan11-696x464.jpg",
+                location: "Tiverton, Devon",
+                price: "£245",
+                title: "Chatan at Cove Valley",
+                notes: "Breathtaking interiors and remote seclusion at these cabins in mid Devon, part of an inspirational rewilding project (each sleeps 2)"
+            },
+			{
+                url: "https://www.kiphideaways.com/hideaways/huts-in-the-hills/",
+                thumbnail: "https://www.kiphideaways.com/wp-content/uploads/2020/04/Hutte-Starry-Skies-Northumberland1-scaled.jpg",
+                location: "Alnwick, Northumberland",
+                price: "£225",
+                title: "Huts in the Hills",
+                notes: "Views, peace, and alfresco baths. Tucked away on a farm in Northumberland’s Dark Sky Park, these handcrafted huts are wonderfully remote, set in individual fields with breathtaking views by day and star-filled skies by night."
+            },
+			{
+                url: "https://www.airbnb.co.uk/rooms/25120845",
+                thumbnail: "https://a0.muscache.com/im/pictures/airflow/Hosting-25120845/original/772b7b5e-ffbc-4b8d-b349-94dc41810ac0.jpg?im_w=960",
+                location: "Llangynidr, Wales",
+                price: "£135",
+                title: "The Bwthyn - a riverside rural retreat",
+                notes: "A tiny cruck-beamed cottage, situated at the confluence of two streams, tastefully restored to offer a place of peace in beautiful surroundings in the Brecon Beacons National Park, close to Pen y Fan & Black Mountains."
+            },
+			{
+                url: "https://www.airbnb.co.uk/rooms/25120845",
+                thumbnail: "https://a0.muscache.com/im/pictures/hosting/Hosting-49983026/original/8077a264-79c8-4d69-a186-989de6b2c7d8.jpeg?im_w=1200",
+                location: "Llangynidr, Wales",
+                price: "£154",
+                title: "Sycamore Cabin",
+                notes: "Our handcrafted en-suite wooden cabin is located within a small wood on the grounds of working sheep farm with views into a peaceful woodland. It has everything you need to retreat from the real world, whether it's for a cosy night in, in front of the log burner or a chance to relax in the wood fired hot tub and stargaze out on the deck."
+            }
+        ];
+
+        // --- THE ENGINE ---
+        // This function automatically loops through your data and builds the HTML
+        function renderListings() {
+            const grid = document.getElementById('listings-grid');
+            grid.innerHTML = ''; // Clear existing content
+
+            airbnbData.forEach(item => {
+                const card = document.createElement('a');
+                card.href = item.url;
+                card.target = '_blank';
+                card.className = 'card';
+
+                card.innerHTML = `
+                    <div class="thumbnail-wrapper">
+                        <img src="${item.thumbnail}" alt="${item.title}">
+                    </div>
+                    <div class="card-content">
+                        <div class="tags">${item.location} • ${item.price}/night</div>
+                        <div class="title">${item.title}</div>
+                        <div class="notes">${item.notes}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Run the function when the page loads
+        window.onload = renderListings;
+    </script>
+
+</body>
+</html>
